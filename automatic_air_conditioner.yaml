@@ -146,8 +146,6 @@ variables:
   target_temperature_start: !input target_temperature_start
   climate: !input climate
   target_temperature_stop: !input target_temperature_stop
-  window: !input window
-  language: !input language
   presence_home: !input presence_home
 trigger:
 - platform: numeric_state
