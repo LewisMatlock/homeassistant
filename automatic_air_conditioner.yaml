@@ -30,6 +30,7 @@ blueprint:
       selector:
         entity:
           domain: climate
+          multiple: true
 
     season:
       name: Select season
