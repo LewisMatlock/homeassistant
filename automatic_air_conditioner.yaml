@@ -14,6 +14,16 @@ blueprint:
   domain: automation
   input:
 
+    language:
+        name: Select language
+        description: 'Select the language for the text of notifications.'
+        default: English
+        selector:
+          select:
+            mode: dropdown
+            options:
+              - English
+
     climate:
       name: Entities climate
       description: 'Select climate entities to be used.'
