@@ -24,14 +24,6 @@ blueprint:
             options:
               - English
 
-    climate:
-      name: Entities climate
-      description: 'Select climate entities to be used.'
-      selector:
-        entity:
-          domain: climate
-          multiple: true
-
     season:
       name: Select season
       description: 'Select the season of use.'
@@ -42,6 +34,32 @@ blueprint:
           options:
             - Summer
             - Winter
+  
+    hvac_modes:
+      name: Hvac modes
+      description: 'Select the mode to be set to the air conditioner.'
+      default: cool
+      selector:
+        select:
+          mode: dropdown
+          options:
+            - heat
+            - cool
+
+    climate:
+      name: Thermostat Entity
+      description: 'Select thermostat to configure.'
+      selector:
+        entity:
+          domain: climate
+
+    primary_temperature_sensor:
+      name: Primary Temperature Sensor
+      description: 'Select temperature sensor as the primary sensor to be used by the thermostat.'
+      selector:
+        entity:
+          domain: climate
+          domain: sensor
 
     set_temperature_climate:
       name: Set temperature climate
@@ -49,36 +67,11 @@ blueprint:
       description: 'Select the temperature to be set at climate.'
       selector:
         number:
-          min: 76
-          max: 80
+          min: 60
+          max: 85
           unit_of_measurement: °F
           mode: slider
           step: 1
-
-    hvac_modes:
-      name: Hvac modes
-      description: 'Select the mode to be set to the air conditioner.'
-      default: dry
-      selector:
-        select:
-          mode: dropdown
-          options:
-            - heat
-            - cool
-            - fan_only
-
-    fan_modes:
-      name: Fan modes
-      description: 'Select the ventilation speed to be set at the air conditioner.'
-      default: auto
-      selector:
-        select:
-          mode: dropdown
-          options:
-            - auto
-            - high
-            - low
-            - mid
 
     presence_home:
       name: Presence Home
@@ -87,15 +80,15 @@ blueprint:
       selector:
         entity:
           domain: group
-
+          multiple: true
 
     target_temperature_start:
       name: Target temperature start
       default: 78
-      description: 'Set the startup target temperature.'
+      description: 'Set the target temperature to startup the Thermostat.'
       selector:
         number:
-          min: 70
+          min: 60
           max: 85
           unit_of_measurement: °F
           mode: slider
@@ -103,13 +96,13 @@ blueprint:
 
     target_temperature_stop:
       name: Target temperature stop
-      default: 76
-      description: 'Set the target temperature for shutdown.'
+      default: 77
+      description: 'Set the target temperature to shutdown the Thermostat.'
       selector:
         number:
-          min: 70
+          min: 60
           max: 85
-          unit_of_measurement: °C
+          unit_of_measurement: °F
           mode: slider
           step: 1
 
@@ -122,6 +115,18 @@ blueprint:
           min: 0
           max: 30
           unit_of_measurement: min
+          mode: slider
+          step: 1
+
+    outside_temperature_stop:
+      name: Outside temperature stop
+      default: 74
+      description: 'Set the outside air temperature to shutdown the Thermostat.'
+      selector:
+        number:
+          min: 60
+          max: 90
+          unit_of_measurement: °F
           mode: slider
           step: 1
 
@@ -154,6 +159,7 @@ variables:
   climate: !input climate
   target_temperature_stop: !input target_temperature_stop
   presence_home: !input presence_home
+  outside_temperature_stop: !input outside_temperature_stop
 trigger:
 - platform: numeric_state
   entity_id: !input climate
@@ -195,15 +201,6 @@ trigger:
       - home
   id: presence_home
 action:
-- alias: Avviso tanica piena
-  if: 
-    - "{{ trigger.id == 'moisture_notify' and not is_state(climate,'off')}}"
-  then: 
-    - domain: mobile_app
-      type: notify
-      device_id: !input notify_device
-      title: "AIR CONDITIONER."
-      message: "Air conditioner water discharge container full, automatic shutdown in 5 minutes."
 - alias: Spegni climate
   if: 
     - "{{not is_state(climate,'off')}}"
