@@ -15,14 +15,14 @@ blueprint:
   input:
 
     language:
-        name: Select language
-        description: 'Select the language for the text of notifications.'
-        default: English
-        selector:
-          select:
-            mode: dropdown
-            options:
-              - English
+      name: Select language
+      description: 'Select the language for the text of notifications.'
+      default: English
+      selector:
+        select:
+          mode: dropdown
+          options:
+            - English
 
     season:
       name: Select season
