@@ -188,7 +188,9 @@ trigger:
 action:
 - alias: climate
   if: 
-    - "{{ temperature_trigger_selector == 'Thermostat' and (state_attr(climate,'current_temperature')|float(0) < target_temperature_stop|float(0) )}}"
+    - or:
+      - "{{ temperature_trigger_selector == 'Thermostat' and (state_attr(climate,'current_temperature')|float(0) <= target_temperature_stop|float(0) )}}"
+      - "{{ temperature_trigger_selector == 'Sensor' and (state_attr(secondary_temperature_sensor,'current_temperature')|float(0) <= target_temperature_stop|float(0) )}}"
   then:
       - service: climate.turn_off
         target:
