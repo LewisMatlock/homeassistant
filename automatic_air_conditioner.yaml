@@ -129,20 +129,6 @@ blueprint:
           mode: slider
           step: 1
 
-    start_time:
-      name: Start time
-      default: "00:00:00"
-      description: 'Set automatic operation start time.'
-      selector:
-        time: 
-
-    stop_time:
-      name: Stop time
-      default: "00:00:00"
-      description: 'Set automatic operation end time.'
-      selector:
-        time: 
-
     notify_device:
       name: Device to notify push
       default: false
@@ -180,17 +166,16 @@ trigger:
   id: climate_off
 - platform: numeric_state
   entity_id: !input climate
+  attribute: current_temperature
+  above: !input outside_temperature_stop
+  id: climate_off
+- platform: numeric_state
+  entity_id: !input climate
   attribute: current_temperature 
   above: !input target_temperature_stop
   for: 
     minutes: !input delay_temperature_stop
   id: climate_off
-- platform: time
-  at: !input stop_time
-  id: climate_off
-- platform: time
-  at: !input start_time
-  id: climate_on
 - platform: state
   entity_id: !input presence_home
   from: 
@@ -207,7 +192,6 @@ action:
     - or: 
       - "{{ trigger.id == 'presence_home' and trigger.to_state.state == 'not_home'}}"
       - "{{ trigger.id == 'climate_off' and (state_attr(climate,'current_temperature')|float(0) > target_temperature_stop|float(0) )}}"
-      - "{{ trigger.id == 'climate_off' and trigger.platform == 'time'}}"
   then:
       - service: climate.turn_off
         target:
@@ -217,5 +201,4 @@ action:
         device_id: !input notify_device
         title: "AIR CONDITIONER."
         message: "{% if (trigger.id == 'climate_off' or trigger.id == 'presence_home')%} Automatic air conditioner shutdown.
-                  {% elif trigger.id == 'moisture_climate_off' %} Air conditioner off for water drain container full.
                   {% endif %}"
