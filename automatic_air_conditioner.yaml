@@ -190,7 +190,7 @@ action:
   if:
     - or:
       - "{{ temperature_trigger_selector == 'Thermostat' and (state_attr(climate,'current_temperature')|float(0) < target_temperature_stop|float(0) )}}"
-      - "{{ temperature_trigger_selector == 'Sensor' and (secondary_temperature_sensor|float(0) < target_temperature_stop|float(0) )}}"
+      - "{{ temperature_trigger_selector == 'Sensor' and (states(secondary_temperature_sensor)|float(0) < target_temperature_stop|float(0) )}}"
   then:
       - service: climate.turn_off
         target:
