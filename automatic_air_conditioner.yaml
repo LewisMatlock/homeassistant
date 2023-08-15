@@ -95,7 +95,7 @@ blueprint:
 
     target_temperature_stop:
       name: Target temperature stop
-      default: 77
+      default: 76
       description: 'Set the target temperature to shutdown the Thermostat.'
       selector:
         number:
@@ -189,8 +189,8 @@ action:
 - alias: climate
   if: 
     - or:
-      - "{{ temperature_trigger_selector == 'Thermostat' and (state_attr(climate,'current_temperature')|float(0) <= target_temperature_stop|float(0) )}}"
-      - "{{ temperature_trigger_selector == 'Sensor' and (state_attr(secondary_temperature_sensor,'current_temperature')|float(0) <= target_temperature_stop|float(0) )}}"
+      - "{{ temperature_trigger_selector == 'Thermostat' and (state_attr(climate,'current_temperature')|float(0) < target_temperature_stop|float(0) )}}"
+      - "{{ temperature_trigger_selector == 'Sensor' and (state_attr(secondary_temperature_sensor,'current_temperature')|float(0) < target_temperature_stop|float(0) )}}"
   then:
       - service: climate.turn_off
         target:
