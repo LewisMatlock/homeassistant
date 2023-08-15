@@ -23,17 +23,6 @@ blueprint:
           mode: dropdown
           options:
             - English
-
-    season:
-      name: Select season
-      description: 'Select the season of use.'
-      default: Summer
-      selector:
-        select:
-          mode: dropdown
-          options:
-            - Summer
-            - Winter
   
     hvac_modes:
       name: Hvac modes
@@ -53,12 +42,23 @@ blueprint:
         entity:
           domain: climate
 
-    primary_temperature_sensor:
-      name: Primary Temperature Sensor
+    secondary_temperature_sensor:
+      name: Secondary Temperature Sensor
       description: 'Select temperature sensor as the primary sensor to be used by the thermostat.'
       selector:
         entity:
-          domain: climate, sensor
+          domain: sensor
+
+    temperature_trigger_selector:
+      name: Temperature Sensor Trigger
+      description: 'Select the temperature sensor to trigger automation.'
+      default: cool
+      selector:
+        select:
+          mode: dropdown
+          options:
+            - Thermostat
+            - Sensor
 
     set_temperature_climate:
       name: Set temperature climate
@@ -153,12 +153,13 @@ blueprint:
 
 mode: parallel
 variables:
-  season: !input season
   target_temperature_start: !input target_temperature_start
   climate: !input climate
   target_temperature_stop: !input target_temperature_stop
   presence_home: !input presence_home
   outside_temperature_stop: !input outside_temperature_stop
+  secondary_temperature_sensor: !input secondary_temperature_sensor
+  temperature_trigger_selector: !input temperature_trigger_selector
 trigger:
 - platform: numeric_state
   entity_id: !input climate
@@ -200,13 +201,12 @@ trigger:
       - home
   id: presence_home
 action:
-- alias: Spegni climate
+- alias: climate
   if: 
     - "{{not is_state(climate,'off')}}"
     - or: 
       - "{{ trigger.id == 'presence_home' and trigger.to_state.state == 'not_home'}}"
-      - "{{ trigger.id == 'climate_off' and season == 'Winter' and (state_attr(climate,'current_temperature')|float(0) > target_temperature_stop|float(0) )}}"
-      - "{{ trigger.id == 'climate_off' and season == 'Summer' and (state_attr(climate,'current_temperature')|float(0) < target_temperature_stop|float(0) )}}"
+      - "{{ trigger.id == 'climate_off' and (state_attr(climate,'current_temperature')|float(0) > target_temperature_stop|float(0) )}}"
       - "{{ trigger.id == 'climate_off' and trigger.platform == 'time'}}"
   then:
       - service: climate.turn_off
