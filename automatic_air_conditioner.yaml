@@ -58,8 +58,7 @@ blueprint:
       description: 'Select temperature sensor as the primary sensor to be used by the thermostat.'
       selector:
         entity:
-          domain: climate
-          domain: sensor
+          domain: climate, sensor
 
     set_temperature_climate:
       name: Set temperature climate
