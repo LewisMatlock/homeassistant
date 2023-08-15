@@ -188,10 +188,7 @@ trigger:
 action:
 - alias: climate
   if: 
-    - "{{not is_state(climate,'off')}}"
-    - or: 
-      - "{{ trigger.id == 'presence_home' and trigger.to_state.state == 'not_home'}}"
-      - "{{ trigger.id == 'climate_off' and (state_attr(climate,'current_temperature')|float(0) > target_temperature_stop|float(0) )}}"
+    - "{{ temperature_trigger_selector == 'Thermostat' and (state_attr(climate,'current_temperature')|float(0) < target_temperature_stop|float(0) )}}"
   then:
       - service: climate.turn_off
         target:
