@@ -32,8 +32,10 @@ blueprint:
         select:
           mode: dropdown
           options:
+            - 'off'
             - heat
             - cool
+            - heat_cool
 
     climate:
       name: Thermostat Entity
@@ -223,4 +225,4 @@ action:
         type: notify
         device_id: !input notify_device
         title: "AIR CONDITIONER."
-        message: "Automatic air conditioner turuned on."
+        message: "Automatic air conditioner turned on."
